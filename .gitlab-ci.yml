@@ -1,0 +1,127 @@
+image: docker:stable
+
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME$CI_PIPELINE_ID
+  APP_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
+
+stages:
+  - build
+  - test
+  - deploy
+
+prodBuild:
+  stage: build
+  image: docker:stable-git
+  only:
+    - master
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY 
+    - docker build --tag  $CONTAINER_IMAGE --build-arg NGINX="nginx.conf" --build-arg GITUSER="$CI_REGISTRY_USER" --build-arg GITTOKEN="$CI_REGISTRY_PASSWORD" -f CicdDockerfile .
+    - docker push $CONTAINER_IMAGE 
+
+stagingBuild:
+  stage: build
+  image: docker:stable-git
+  only:
+    - staging
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY 
+    - docker build --tag  $CONTAINER_IMAGE --build-arg NGINX="nginx.conf" --build-arg GITUSER="$CI_REGISTRY_USER" --build-arg GITTOKEN="$CI_REGISTRY_PASSWORD" -f CicdDockerfile .
+    - docker push $CONTAINER_IMAGE 
+
+uatBuild:
+  stage: build
+  image: docker:stable-git
+  only:
+    - uat
+    - develop
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY 
+    - docker build --tag  $CONTAINER_IMAGE --build-arg NGINX="nginx.uat.conf" --build-arg GITUSER="$CI_REGISTRY_USER" --build-arg GITTOKEN="$CI_REGISTRY_PASSWORD" -f CicdDockerfile .
+    - docker push $CONTAINER_IMAGE 
+
+unittest:
+  stage: test
+  image: $CONTAINER_IMAGE
+  only:
+    - master
+    - staging
+    - uat
+    - develop
+  # tags:
+  #   - Test
+  script: 
+    - cd
+
+
+prodDeploy:
+  stage: deploy
+  only: 
+    - master
+  image: openshift/origin-cli
+  script:
+    - cd /
+    # # oc whoami -t (取得Token)
+    # - oc login --token=$SELF_OC_TOKEN --server=$SELF_OC_HOST --insecure-skip-tls-verify
+
+    # # NEW KEY
+    # # - oc create secret docker-registry gitlab-auth --docker-server="$CI_REGISTRY" --docker-username="$CI_REGISTRY_USER" --docker-password="$CI_REGISTRY_PASSWORD" --docker-email="$GITLAB_USER_EMAIL" -o yaml --namespace $SELF_KUBE_NAMESPACE --dry-run > secret.yaml
+    # # - oc create secret docker-registry gitlab-auth --docker-server="$CI_REGISTRY" --docker-username="$CI_REGISTRY_USER" --docker-password="$CI_REGISTRY_PASSWORD" --docker-email="$GITLAB_USER_EMAIL" -o yaml --dry-run > secret.yaml
+    # # - oc create -f secret.yaml
+
+    # # # replace
+    # - sed 's/_APP_NAME_/'"$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME"'/g; s/_APP_NAMESPACE_/'"$SELF_KUBE_NAMESPACE"'/g; s/_APP_REPLICAS_/2/g; s/_BRANCH_/'"$CI_COMMIT_REF_NAME"'/g; s/_CONTAINER_IMAGE_/'"$SELF_KUBE_SED:$CI_COMMIT_REF_NAME$CI_PIPELINE_ID$LATEST"'/g' kubernetes.tpl.yml > kubernetes.yml;
+    # # - head -100 kubernetes.yml
+    # - oc apply -f kubernetes.yml
+
+    # # 查詢升級狀況
+    # - kubectl rollout status deployment/$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
+
+stagingDeploy:
+  stage: deploy
+  image: openshift/origin-cli
+  only: 
+    - staging
+  script:
+    - cd /
+    # oc whoami -t (取得Token)
+    # - oc login --token=$SELF_OC_TOKEN --server=$SELF_OC_HOST --insecure-skip-tls-verify
+
+    # # NEW KEY
+    # # - oc create secret docker-registry gitlab-auth --docker-server="$CI_REGISTRY" --docker-username="$CI_REGISTRY_USER" --docker-password="$CI_REGISTRY_PASSWORD" --docker-email="$GITLAB_USER_EMAIL" -o yaml --namespace $SELF_KUBE_NAMESPACE --dry-run > secret.yaml
+    # # - oc create -f secret.yaml
+
+    # # # replace
+    # - sed 's/_APP_NAME_/'"$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME"'/g; s/_APP_NAMESPACE_/'"$SELF_KUBE_NAMESPACE"'/g; s/_APP_REPLICAS_/1/g; s/_BRANCH_/'"$CI_COMMIT_REF_NAME"'/g; s/_CONTAINER_IMAGE_/'"$SELF_KUBE_SED:$CI_COMMIT_REF_NAME$CI_PIPELINE_ID$LATEST"'/g' kubernetes.tpl.yml > kubernetes.yml;
+    # # - head -100 kubernetes.yml
+    # - oc apply -f kubernetes.yml
+
+    # # 查詢升級狀況
+    # - kubectl rollout status deployment/$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
+
+uatDeploy:
+  stage: deploy
+  image: gitlab.starlux-airlines.com:4567/base-image/okd:alpine
+  variables:
+    ROUTE_NAME: "ggp-api-uat.starlux-airlines.com"
+  only: 
+    - uat
+  script:
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.starlux-airlines.com/okd-deployment/scripts.git
+    - cd scripts && sh deploy.sh
+
+devDeploy:
+  stage: deploy
+  image: gitlab.starlux-airlines.com:4567/base-image/okd:alpine
+  variables:
+    ROUTE_NAME: "ggp-api-dev.starlux-airlines.com"
+  only:
+    - develop
+  script:
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.starlux-airlines.com/okd-deployment/scripts.git
+    - cd scripts && sh deploy.sh
+

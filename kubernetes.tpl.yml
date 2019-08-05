@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: _APP_NAME_
+  labels:
+    app: _APP_NAME_
+  namespace: _APP_NAMESPACE_
+spec:
+  replicas: _APP_REPLICAS_
+  selector:
+    matchLabels:
+      app: _APP_NAME_
+  
+  # Pod template
+  template:
+    metadata:
+      labels:
+        app: _APP_NAME_
+    spec:
+      # securityContext:
+      #   runAsUser: 1129760001
+      containers:
+        - name: test
+          image: _CONTAINER_IMAGE_
+          envFrom:
+          - configMapRef:
+              name: ggp-api-configmap
+          # resources:
+          #   limits:
+          #     memory: "200Mi"
+          #   requests:
+          #     memory: "100Mi"
+          imagePullPolicy: Always
+          # securityContext:
+          #   allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 8080
+      imagePullSecrets:
+        - name: gitlab-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: _APP_NAME_
+  labels:
+    app: _APP_NAME_
+  namespace: _APP_NAMESPACE_
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+      app: _APP_NAME_

@@ -1,0 +1,481 @@
+openapi: 3.0.0
+info:
+  description: "google pass"
+  version: "1.0.0"
+  title: "google pass"
+servers:
+- url: https://ggp-api.test.com/
+  variables:
+    environment:
+      default:  gp-api-stg
+      enum:
+      - gp-api-stg
+  description: google pass api
+tags:
+- name: "Flight"
+  description: ""
+paths:
+  /pass/flightClass/{classId}:
+    post:
+      tags:
+      - "Flight"
+      summary: "新增航班"
+      description: ""
+      parameters:
+      - in: path
+        required: true
+        description: class id
+        name: classId
+        schema:
+          type: string
+        default: 20201212JX0520
+        example: 20201212JX0520
+      requestBody:
+        description: "" 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                localScheduledDepartureDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localEstimatedOrActualDepartureDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localBoardingDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localGateClosingDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localScheduledArrivalDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localEstimatedOrActualArrivalDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                flightNumber:
+                  type: string
+                  format: string
+                  default: "0666"
+                  example: "0666"
+                operatingFlightNumber:
+                  type: string
+                  format: string
+                  default: "0666"
+                  example: "0666"
+                originAirportIataCode:
+                  type: string
+                  format: string
+                  default: "TPE"
+                  example: "TPE"
+                originTerminal:
+                  type: string
+                  format: string
+                  default: "1"
+                  example: "1"
+                originGate:
+                  type: string
+                  format: string
+                  default: "C2"
+                  example: "C2"
+                destinationAirportIataCode:
+                  type: string
+                  format: string
+                  default: "GGG"
+                  example: "GGG"
+                destinationTerminal:
+                  type: string
+                  format: string
+                  default: "1"
+                  example: "1"
+                destinationGate:
+                  type: string
+                  format: string
+                  default: "C2"
+                  example: "C2"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OK"
+    patch:
+      tags:
+      - "Flight"
+      summary: "更新航班"
+      description: ""
+      parameters:
+      - in: path
+        required: true
+        description: class id
+        name: classId
+        schema:
+          type: string
+        default: 20201212JX0520
+        example: 20201212JX0520
+      requestBody:
+        description: "" 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                flightStatus:
+                  type: string
+                  format: string
+                  default: "scheduled"
+                  example: "scheduled"
+                localScheduledDepartureDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localEstimatedOrActualDepartureDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localBoardingDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localGateClosingDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localScheduledArrivalDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                localEstimatedOrActualArrivalDateTime:
+                  type: string
+                  format: string
+                  default: "2019-03-05T06:30:00"
+                  example: "2019-03-05T06:30:00"
+                originTerminal:
+                  type: string
+                  format: string
+                  default: "1"
+                  example: "1"
+                originGate:
+                  type: string
+                  format: string
+                  default: "C2"
+                  example: "C2"
+                destinationTerminal:
+                  type: string
+                  format: string
+                  default: "1"
+                  example: "1"
+                destinationGate:
+                  type: string
+                  format: string
+                  default: "C2"
+                  example: "C2"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OK"
+    get:
+      tags:
+      - "Flight"
+      summary: "查詢航班"
+      description: ""
+      parameters:
+      - in: path
+        required: true
+        description: class id
+        name: classId
+        schema:
+          type: string
+        default: 20201212JX0520
+        example: 20201212JX0520
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OK"
+  /pass/flightObject/{objectId}:
+    post:
+      tags:
+      - "Flight"
+      summary: "新增登機證"
+      description: ""
+      parameters:
+      - in: path
+        required: true   
+        description: object id     
+        name: objectId
+        schema:
+          type: string
+        default: your unique id
+        example: your unique id
+      requestBody:
+        description: "" 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classId:
+                  type: string
+                  format: string
+                  default: "20201212JX0520"
+                  example: "20201212JX0520"
+                barcode:
+                  type: string
+                  format: string
+                  default: "https://dvblobcdnjp.azureedge.net//Content/Upload/Popular/Images/2017-08/30f51eb6-c669-497e-a8dc-ad5f7749ad4d_m.jpg"
+                  example: "https://dvblobcdnjp.azureedge.net//Content/Upload/Popular/Images/2017-08/30f51eb6-c669-497e-a8dc-ad5f7749ad4d_m.jpg"
+                messagesHeaderEN:
+                  type: string
+                  format: string
+                  default: "en header messages"
+                  example: "en header messages"
+                messagesHeaderTW:
+                  type: string
+                  format: string
+                  default: "tw header messages"
+                  example: "tw header messages"
+                messagesBodyEN:
+                  type: string
+                  format: string
+                  default: "en body messages"
+                  example: "en body messages"
+                messagesBodyTW:
+                  type: string
+                  format: string
+                  default: "tw body messages"
+                  example: "tw body messages"
+                displayStart:
+                  type: string
+                  format: string
+                  default: "1985-04-12T23:20:50.52Z"
+                  example: "1985-04-12T23:20:50.52Z"
+                validEndTime:
+                  type: string
+                  format: string
+                  default: "2085-04-12T23:20:50.52Z"
+                  example: "2085-04-12T23:20:50.52Z"
+                passengerName:
+                  type: string
+                  format: string
+                  default: "Da Ben Den"
+                  example: "Da Ben Den"
+                boardingGroup:
+                  type: string
+                  format: string
+                  default: "B"
+                  example: "B"
+                seatNumber:
+                  type: string
+                  format: string
+                  default: "1A"
+                  example: "1A"
+                boardingPosition:
+                  type: string
+                  format: string
+                  default: "1"
+                  example: "1"
+                sequenceNumber:
+                  type: string
+                  format: string
+                  default: "49"
+                  example: "49"
+                seatClass:
+                  type: string
+                  format: string
+                  default: "Economy"
+                  example: "Economy"
+                boardingDoor:
+                  type: string
+                  format: string
+                  default: "front"
+                  example: "front"
+                confirmationCode:
+                  type: string
+                  format: string
+                  default: "3345678"
+                  example: "3345678"
+                eticketNumber:
+                  type: string
+                  format: string
+                  default: "3345678"
+                  example: "3345678"
+                frequentFlyerNumber:
+                  type: string
+                  format: string
+                  default: "frequentFlyerNumber"
+                  example: "frequentFlyerNumber"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OK"
+    patch:
+      tags:
+      - "Flight"
+      summary: "更新登機證"
+      description: ""
+      parameters:
+      - in: path
+        required: true   
+        description: object id     
+        name: objectId
+        schema:
+          type: string
+        default: your unique id
+        example: your unique id
+      requestBody:
+        description: "" 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+                  format: string
+                  default: "active"
+                  example: "active"
+                barcode:
+                  type: string
+                  format: string
+                  default: "https://dvblobcdnjp.azureedge.net//Content/Upload/Popular/Images/2017-08/30f51eb6-c669-497e-a8dc-ad5f7749ad4d_m.jpg"
+                  example: "https://dvblobcdnjp.azureedge.net//Content/Upload/Popular/Images/2017-08/30f51eb6-c669-497e-a8dc-ad5f7749ad4d_m.jpg"
+                passengerName:
+                  type: string
+                  format: string
+                  default: "Da Ben Den"
+                  example: "Da Ben Den"
+                boardingGroup:
+                  type: string
+                  format: string
+                  default: "B"
+                  example: "B"
+                seatNumber:
+                  type: string
+                  format: string
+                  default: "1A"
+                  example: "1A"
+                boardingPosition:
+                  type: string
+                  format: string
+                  default: "1"
+                  example: "1"
+                sequenceNumber:
+                  type: string
+                  format: string
+                  default: "49"
+                  example: "49"
+                seatClass:
+                  type: string
+                  format: string
+                  default: "Economy"
+                  example: "Economy"
+                boardingDoor:
+                  type: string
+                  format: string
+                  default: "front"
+                  example: "front"
+                confirmationCode:
+                  type: string
+                  format: string
+                  default: "3345678"
+                  example: "3345678"
+                eticketNumber:
+                  type: string
+                  format: string
+                  default: "3345678"
+                  example: "3345678"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OK"
+    get:
+      tags:
+      - "Flight"
+      summary: "取得登機證"
+      description: ""
+      parameters:
+      - in: path
+        required: true   
+        description: object id     
+        name: objectId
+        schema:
+          type: string
+        default: your unique id
+        example: your unique id
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OK"
+components:
+  schemas:
+    OK:
+      type: object
+      properties:
+        version:
+          type: string
+          example: "20190116"
+        status:
+          type: boolean
+          example: true
+        message:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "13"
+            content:
+              type: "array"
+              items:
+                example: null
+        error:
+          type: "array"
+          items:
+            example: null
+        result:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 0
+            data:
+              type: array
+              items:
+                type: object
+        meta:
+          type: string
+          example: null
